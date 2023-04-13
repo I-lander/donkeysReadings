@@ -10,7 +10,6 @@ export default function Home() {
   const [card3, setCard3] = useState("Card 3");
 
   async function onSubmit(event) {
-
     event.preventDefault();
     try {
       const response = await fetch("/api/generate", {
