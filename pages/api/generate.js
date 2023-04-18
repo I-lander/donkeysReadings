@@ -1,5 +1,4 @@
 import { Configuration, OpenAIApi } from "openai";
-import { shuffle, cards } from "./cards";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -17,7 +16,7 @@ export default async function (req, res) {
     return;
   }
 
-  const question = req.body.question || "";
+  const {question, cards} = req.body;
   if (question.trim().length === 0) {
     res.status(400).json({
       error: {
@@ -30,11 +29,10 @@ export default async function (req, res) {
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(question),
+      prompt: generatePrompt(question, cards),
       temperature: 1,
       max_tokens: 310,
     });
-    console.log(completion);
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch (error) {
     // Consider adjusting the error handling logic for your use case
@@ -52,12 +50,9 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(question) {
-  shuffle();
-
+function generatePrompt(question, cards) {
   const capitalizedQuestion =
     question[0].toUpperCase() + question.slice(1).toLowerCase();
-  console.log("xxxxxxxxxxxxxxxxxxxxx");
-  return `Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. Use only these cards to build the reading. The answer must use the language used in the question.`;
-  // return `Please provide a tarot reading for the following question: ${question}. The answer must use the language used in the question. Start the answer without introduction`;
+
+    return `Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. Use only these cards to build the reading. The answer must use the language used in the question.`;
 }

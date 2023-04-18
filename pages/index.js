@@ -12,12 +12,13 @@ export default function Home() {
   async function onSubmit(event) {
     event.preventDefault();
     try {
+      shuffle();
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: questionInput }),
+        body: JSON.stringify({ question: questionInput, cards: cards }),
       });
 
       const data = await response.json();
@@ -27,9 +28,9 @@ export default function Home() {
           new Error(`Request failed with status ${response.status}`)
         );
       }
-      setCard1(cards[0].name);
-      setCard2(cards[1].name);
-      setCard3(cards[2].name);
+      setCard1(cards[0].img);
+      setCard2(cards[1].img);
+      setCard3(cards[2].img);
 
       setResult(data.result);
       setQuestionInput("");
@@ -66,13 +67,13 @@ export default function Home() {
 
         <div className="cards-container">
           <div className="card" id="card1">
-            {card1}
+            <img className="card-image" src={card1}></img>
           </div>
           <div className="card" id="card2">
-            {card2}
+            <img className="card-image" src={card2}></img>
           </div>
           <div className="card" id="card3">
-            {card3}
+            <img className="card-image" src={card3}></img>
           </div>
         </div>
         <div className="reading-container">{result}</div>
