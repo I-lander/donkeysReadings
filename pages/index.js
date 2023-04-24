@@ -1,15 +1,41 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
+import { CanvasComponent } from "../public/animation";
+
+function createMarkup(result) {
+  return { __html: result };
+}
+
+const LoadingIcon = () => {
+  return (
+    <div className="loading-icon">
+      <div className="loading-icon__spinner"></div>
+    </div>
+  );
+};
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const [questionInput, setQuestionInput] = useState("");
   const [result, setResult] = useState();
-  const [card1, setCard1] = useState("Card 1");
-  const [card2, setCard2] = useState("Card 2");
-  const [card3, setCard3] = useState("Card 3");
+  const [card1, setCard1] = useState("../src/back.jpg");
+  const [card2, setCard2] = useState("../src/back.jpg");
+  const [card3, setCard3] = useState("../src/back.jpg");
+
+  useEffect(() => {
+    if (result) {
+      return setIsLoading(false);
+    }
+  }, [result]);
 
   async function onSubmit(event) {
+    setIsLoading(true);
+    setResult();
+    setCard1("../src/back.jpg");
+    setCard2("../src/back.jpg");
+    setCard3("../src/back.jpg");
     event.preventDefault();
     try {
       shuffle();
@@ -40,16 +66,16 @@ export default function Home() {
       alert(error.message);
     }
   }
-
   return (
     <div>
       <Head>
-        <title>Tarot Reading</title>
+        <title>Donkeys Readings</title>
         <link rel="stylesheet" href="style.css" />
       </Head>
 
       <main className="container">
-        <h1>Tarot Reading</h1>
+        {/* <CanvasComponent className="canvas" /> */}
+        <h1>Donkeys Readings</h1>
         <div className="description">
           Welcome to the Tarot Reading page! <br></br>Please ask a question and
           draw your cards to receive a personalized reading.
@@ -62,7 +88,12 @@ export default function Home() {
             value={questionInput}
             onChange={(e) => setQuestionInput(e.target.value)}
           />
-          <input type="submit" className="submit-btn" value="Submit" />
+          <input
+            type="submit"
+            className="submit-btn"
+            value="Submit"
+            disabled={isLoading}
+          />
         </form>
 
         <div className="cards-container">
@@ -76,7 +107,14 @@ export default function Home() {
             <img className="card-image" src={card3}></img>
           </div>
         </div>
-        <div className="reading-container">{result}</div>
+        <div className="reading-container">
+          {" "}
+          {isLoading ? (
+            <LoadingIcon />
+          ) : (
+            <div dangerouslySetInnerHTML={createMarkup(result)}></div>
+          )}
+        </div>
       </main>
     </div>
   );

@@ -16,7 +16,7 @@ export default async function (req, res) {
     return;
   }
 
-  const {question, cards} = req.body;
+  const { question, cards } = req.body;
   if (question.trim().length === 0) {
     res.status(400).json({
       error: {
@@ -30,7 +30,7 @@ export default async function (req, res) {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: generatePrompt(question, cards),
-      temperature: 1,
+      temperature: 0.8,
       max_tokens: 310,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
@@ -54,5 +54,8 @@ function generatePrompt(question, cards) {
   const capitalizedQuestion =
     question[0].toUpperCase() + question.slice(1).toLowerCase();
 
-    return `Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. Use only these cards to build the reading. The answer must use the language used in the question.`;
+  return `Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. 
+    Use only these cards to build the reading. 
+    The answer must use the language used in the question.
+    Write the answer in HTML and do two linebreak for each sentences.`;
 }
