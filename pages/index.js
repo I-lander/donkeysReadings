@@ -71,10 +71,12 @@ export default function Home() {
       <Head>
         <title>Donkeys Readings</title>
         <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="./src/icon.png" />
+
       </Head>
 
       <main className="container">
-        {/* <CanvasComponent className="canvas" /> */}
+        <CanvasComponent className="canvas" />
         <h1>Donkeys Readings</h1>
         <div className="description">
           Welcome to the Tarot Reading page! <br></br>Please ask a question and

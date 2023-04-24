@@ -2,23 +2,26 @@
   position: fixed;
   top: 0px;
   left: 0px;
+  background-color: #2a2936;
+  z-index: -1;
 }
 
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  font-family: 'arial', monospace;
 }
 
 .container h1 {
   text-align: center;
-  color: #5a5a5a;
+  color: #ffffff;
   font-size: 3rem;
 }
 
 .description {
   text-align: center;
-  color: #8a8a8a;
+  color: #ffffff;
   font-size: 1.2rem;
   margin-bottom: 20px;
 }
