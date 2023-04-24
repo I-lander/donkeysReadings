@@ -36,7 +36,6 @@ export function CanvasComponent() {
         for (let i = 0; i < maxParticles; i++) {
           const particleX = Math.random() * canvas.width;
           const particleY = Math.random() * canvas.height;
-          console.log(particleY);
           particles.push(new Particle(particleX, particleY));
         }
       }
