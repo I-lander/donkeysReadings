@@ -35,7 +35,6 @@ export default async function (req, res) {
     });
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch (error) {
-    // Consider adjusting the error handling logic for your use case
     if (error.response) {
       console.error(error.response.status, error.response.data);
       res.status(error.response.status).json(error.response.data);
@@ -51,11 +50,10 @@ export default async function (req, res) {
 }
 
 function generatePrompt(question, cards) {
-  const capitalizedQuestion =
-    question[0].toUpperCase() + question.slice(1).toLowerCase();
-
-  return `Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. 
+  return `If ${question} is not a question, please answer "111" and skip the following: 
+    Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. 
+  
     Use only these cards to build the reading. 
-    The answer must use the language used in the question.
-    Write the answer in HTML and do two linebreak for each sentences.`;
+    The answer must written with the language used in the question.
+    Write the answer in HTML and add two linebreak for each sentences.`;
 }

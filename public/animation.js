@@ -50,7 +50,6 @@ export function CanvasComponent() {
 
     animate(ctx);
 
-    // Clean up by canceling the animation frame when the component unmounts
     return () => {
       cancelAnimationFrame(animationFrameId);
     };

@@ -61,7 +61,7 @@ export default function Home() {
       setResult(data.result);
       setQuestionInput("");
     } catch (error) {
-      // Consider implementing your own error handling logic here
+      setIsLoading(false);
       console.error(error);
       alert(error.message);
     }
@@ -71,8 +71,7 @@ export default function Home() {
       <Head>
         <title>Donkeys Readings</title>
         <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="./src/icon.png" />
-
+        <link rel="icon" href="./src/icon.png" />
       </Head>
 
       <main className="container">
@@ -90,12 +89,12 @@ export default function Home() {
             value={questionInput}
             onChange={(e) => setQuestionInput(e.target.value)}
           />
-          <input
+          <button
             type="submit"
             className="submit-btn"
             value="Submit"
             disabled={isLoading}
-          />
+          ></button>
         </form>
 
         <div className="cards-container">
