@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
 import { CanvasComponent } from "../public/animation";
+import { LanguageSelector } from "./languageSelector";
 
 function createMarkup(result) {
   return { __html: result };
@@ -16,6 +17,11 @@ const LoadingIcon = () => {
 };
 
 export default function Home() {
+  const languages = [
+    { name: "English", icon: "./src/english.png" },
+    { name: "Français", icon: "./src/french.png" },
+  ];
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [questionInput, setQuestionInput] = useState("");
@@ -76,6 +82,9 @@ export default function Home() {
 
       <main className="container">
         <CanvasComponent className="canvas" />
+        <div className="language-selector">
+          <LanguageSelector languages={languages} />
+        </div>
         <h1>Donkeys Readings</h1>
         <div className="description">
           Welcome to the Tarot Reading page! <br></br>Please ask a question and

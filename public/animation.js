@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 
 let canvas;
-const particles = [];
+let particles = [];
 const maxParticles = 200;
 let delta = 0;
 let lastFrameTimeMs = 0;
@@ -18,6 +18,12 @@ export function CanvasComponent() {
     canvas.height = innerHeight;
     const ctx = canvas.getContext("2d");
     let animationFrameId;
+
+    addEventListener("resize", (event) => {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+      particles = [];
+    });
 
     const animate = () => {
       const timestamp = Date.now();
