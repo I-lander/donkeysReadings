@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
-import { CanvasComponent } from "../public/components/animation";
-import { LanguageSelector } from "../public/components/languageSelector";
+import { CanvasBlock } from "../public/components/CanvasBlock";
+import { LanguageSelector } from "../public/components/LanguageSelector";
 import { DESCRIPTION, TITLE } from "../public/constants/constants";
-import { TranslateObject } from "../public/components/translateObject";
+import { TranslateObject } from "../public/components/TranslateObject";
 
 function createMarkup(result) {
   return { __html: result };
@@ -88,7 +88,7 @@ export default function Home() {
       </Head>
 
       <main className="container">
-        <CanvasComponent className="canvas" />
+        <CanvasBlock className="canvas" />
         <div className="header">
           <h1>
             <TranslateObject object={TITLE} language={currentLanguage} />

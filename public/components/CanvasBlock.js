@@ -9,7 +9,7 @@ let lastTextFrameTimeMs = 0;
 let maxFPS = 90;
 let deltaFactor = 10;
 
-export function CanvasComponent() {
+export function CanvasBlock() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
