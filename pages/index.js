@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
 import { CanvasComponent } from "../public/components/Animation";
 import { LanguageSelector } from "../public/components/LanguageSelector";
-import { DESCRIPTION, TITLE, translate } from "../public/constants/constants";
+import { DESCRIPTION, TITLE } from "../public/constants/constants";
 import { TranslateObject } from "../public/components/TranslateObject";
 
 function createMarkup(result) {
