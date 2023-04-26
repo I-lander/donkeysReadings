@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-export function LanguageSelector({ languages }) {
+export function LanguageSelector({ languages, onLanguageChange }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
 
   function handleLanguageSelect(language) {
     setSelectedLanguage(language);
     setShowDropdown(false);
+    onLanguageChange(language);
   }
 
   return (

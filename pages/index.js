@@ -1,8 +1,10 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
-import { CanvasComponent } from "../public/components/animation";
-import { LanguageSelector } from "../public/components/languageSelector";
+import { CanvasComponent } from "../public/components/Animation";
+import { LanguageSelector } from "../public/components/LanguageSelector";
+import { DESCRIPTION, TITLE, translate } from "../public/constants/constants";
+import { TranslateObject } from "../public/components/TranslateObject";
 
 function createMarkup(result) {
   return { __html: result };
@@ -11,24 +13,28 @@ function createMarkup(result) {
 const LoadingIcon = () => {
   return (
     <div className="loading-icon">
-      <div className="loading-icon__spinner"></div>
+      <img
+        className="loading-icon__spinner"
+        src={"./src/images/loading_icon.png"}
+      ></img>
     </div>
   );
 };
 
 export default function Home() {
   const languages = [
-    { name: "English", icon: "./src/english.png" },
-    { name: "Français", icon: "./src/french.png" },
+    { name: "en", icon: "./src/images/english.png" },
+    { name: "fr", icon: "./src/images/french.png" },
   ];
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [questionInput, setQuestionInput] = useState("");
   const [result, setResult] = useState();
-  const [card1, setCard1] = useState("../src/back.jpg");
-  const [card2, setCard2] = useState("../src/back.jpg");
-  const [card3, setCard3] = useState("../src/back.jpg");
+  const [card1, setCard1] = useState("../src/images/back.jpg");
+  const [card2, setCard2] = useState("../src/images/back.jpg");
+  const [card3, setCard3] = useState("../src/images/back.jpg");
+  const [currentLanguage, setCurrentLanguage] = useState(languages[0]);
 
   useEffect(() => {
     if (result) {
@@ -39,9 +45,9 @@ export default function Home() {
   async function onSubmit(event) {
     setIsLoading(true);
     setResult();
-    setCard1("../src/back.jpg");
-    setCard2("../src/back.jpg");
-    setCard3("../src/back.jpg");
+    setCard1("../src/images/back.jpg");
+    setCard2("../src/images/back.jpg");
+    setCard3("../src/images/back.jpg");
     event.preventDefault();
     try {
       shuffle();
@@ -72,29 +78,39 @@ export default function Home() {
       alert(error.message);
     }
   }
+
   return (
     <div>
       <Head>
         <title>Donkeys Readings</title>
         <link rel="stylesheet" href="style.css" />
-        <link rel="icon" href="./src/icon.png" />
+        <link rel="icon" href="./src/images/icon.png" />
       </Head>
 
       <main className="container">
         <CanvasComponent className="canvas" />
-        <div className="language-selector">
-          <LanguageSelector languages={languages} />
+        <div className="header">
+          <h1>
+            <TranslateObject object={TITLE} language={currentLanguage} />
+          </h1>
+          <div className="language-selector">
+            <LanguageSelector
+              languages={languages}
+              onLanguageChange={setCurrentLanguage}
+            />
+          </div>
         </div>
-        <h1>Donkeys Readings</h1>
+
+        <img className="logo" src="./src/images/icon.png"></img>
+
         <div className="description">
-          Welcome to the Tarot Reading page! <br></br>Please ask a question and
-          draw your cards to receive a personalized reading.
+          <TranslateObject object={DESCRIPTION} language={currentLanguage} />
         </div>
         <form onSubmit={onSubmit} className="input-container">
           <input
             type="text"
             name="question"
-            placeholder="Enter your question"
+            placeholder="..."
             value={questionInput}
             onChange={(e) => setQuestionInput(e.target.value)}
           />

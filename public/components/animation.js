@@ -70,8 +70,8 @@ class Particle {
     this.y = y;
     this.maxRadius = 2;
     this.radius = Math.random() * this.maxRadius;
-    this.hue = Math.random();
-    this.color = `hsla(1, 0%, 50%, ${this.hue})`;
+    this.opacity = Math.random();
+    this.color = `hsla(1, 0%, 100%, ${this.opacity})`;
     this.speedFactor = 0.5;
     this.speed = Math.random() * this.speedFactor;
   }

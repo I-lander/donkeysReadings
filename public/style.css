@@ -1,8 +1,12 @@
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('./src/font/StMarie-Thin.otf') format('truetype');
+}
 .canvas {
   position: fixed;
   top: 0px;
   left: 0px;
-  background-color: #2a2936;
+  background-color: #1a1a22;
   z-index: -1;
 }
 
@@ -10,19 +14,40 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'arial', monospace;
+  font-family: 'MyCustomFont', monospace;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .container h1 {
   text-align: center;
   color: #ffffff;
-  font-size: 3rem;
+  font-size: 62px;
+  margin: 0;
+}
+
+.language-selector {
+  position: relative;
+  display: flex;
+  justify-content: end;
+  margin-left: 24px;
+}
+
+.logo {
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  margin: auto;
 }
 
 .description {
   text-align: center;
   color: #ffffff;
-  font-size: 1.2rem;
+  font-size: 24px;
   margin-bottom: 20px;
 }
 
@@ -87,11 +112,8 @@
 }
 
 .loading-icon__spinner {
-  border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   animation: spin 1s ease-in-out infinite;
 }
 
@@ -133,12 +155,6 @@ button[type="submit"]:before {
   transform: translateY(-50%);
 }
 
-.language-selector {
-  position: relative;
-  display: flex;
-  justify-content: end;
-}
-
 .language-selector__button {
   display: flex;
   align-items: center;
@@ -149,8 +165,8 @@ button[type="submit"]:before {
   padding: 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  width: 35px;
-  height: 35px;
+  width: 36px;
+  height: 36px;
 }
 
 .language-selector__icon {
