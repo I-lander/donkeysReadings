@@ -2,9 +2,10 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
 import { CanvasBlock } from "../public/components/CanvasBlock";
-import { LanguageSelector } from "../public/components/LanguageSelector";
+import { LanguageSelector } from "../public/components/languageSelector";
+import { TranslateObject } from "../public/components/translateObject";
+
 import { DESCRIPTION, TITLE } from "../public/constants/constants";
-import { TranslateObject } from "../public/components/TranslateObject";
 
 function createMarkup(result) {
   return { __html: result };
