@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
-import { CanvasComponent } from "../public/components/Animation";
-import { LanguageSelector } from "../public/components/LanguageSelector";
+import { CanvasComponent } from "../public/components/animation";
+import { LanguageSelector } from "../public/components/languageSelector";
 import { DESCRIPTION, TITLE } from "../public/constants/constants";
-import { TranslateObject } from "../public/components/TranslateObject";
+import { TranslateObject } from "../public/components/translateObject";
 
 function createMarkup(result) {
   return { __html: result };
