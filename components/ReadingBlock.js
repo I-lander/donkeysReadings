@@ -47,23 +47,25 @@ export const ReadingBlock = ({ card1, card2, card3, isLoading, result }) => {
     <div>
       {
         <div>
-          <div className="cards-container">
-            <div className="card">
-              <img className="card-image" src={card1}></img>
+          <div ref={captureDiv}>
+            <div className="cards-container">
+              <div className="card">
+                <img className="card-image" src={card1}></img>
+              </div>
+              <div className="card">
+                <img className="card-image" src={card2}></img>
+              </div>
+              <div className="card">
+                <img className="card-image" src={card3}></img>
+              </div>
             </div>
-            <div className="card">
-              <img className="card-image" src={card2}></img>
+            <div className="reading-container">
+              {isLoading ? (
+                <LoadingIcon />
+              ) : (
+                <div dangerouslySetInnerHTML={createMarkup(result)}></div>
+              )}
             </div>
-            <div className="card">
-              <img className="card-image" src={card3}></img>
-            </div>
-          </div>
-          <div className="reading-container">
-            {isLoading ? (
-              <LoadingIcon />
-            ) : (
-              <div dangerouslySetInnerHTML={createMarkup(result)}></div>
-            )}
           </div>
         </div>
       }
