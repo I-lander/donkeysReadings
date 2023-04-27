@@ -7,24 +7,7 @@ import { LanguageSelector } from "../components/LanguageSelector";
 import { TranslateObject } from "../components/TranslateObject";
 
 import { DESCRIPTION, TITLE } from "../public/constants/constants";
-
-function createMarkup(result) {
-  if (result) {
-    return { __html: result.replace(/^\n+|\n+$/g, "").replace(/\n/g, "<br>") };
-  }
-  return;
-}
-
-const LoadingIcon = () => {
-  return (
-    <div className="loading-icon">
-      <img
-        className="loading-icon__spinner"
-        src={"./src/images/loading_icon.png"}
-      ></img>
-    </div>
-  );
-};
+import { CaptireButton, ReadingBlock } from "../components/ReadingBlock.js";
 
 export default function Home() {
   const languages = [
@@ -147,8 +130,14 @@ export default function Home() {
               disabled={isLoading}
             ></button>
           </form>
-
-          <div className="cards-container">
+          <ReadingBlock
+            card1={card1}
+            card2={card2}
+            card3={card3}
+            isLoading={isLoading}
+            result={result}
+          />
+          {/* <div className="cards-container">
             <div className="card" id="card1">
               <img className="card-image" src={card1}></img>
             </div>
@@ -165,7 +154,7 @@ export default function Home() {
             ) : (
               <div dangerouslySetInnerHTML={createMarkup(result)}></div>
             )}
-          </div>
+          </div> */}
         </div>
         {appVisible ? (
           <AppVisibilityButton
