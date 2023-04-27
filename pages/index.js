@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { shuffle, cards } from "./api/cards";
+import { AppVisibilityButton } from "../components/AppVisibilityButton";
 import { CanvasBlock } from "../components/CanvasBlock";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { TranslateObject } from "../components/TranslateObject";
@@ -36,12 +37,19 @@ export default function Home() {
   const [card2, setCard2] = useState("../src/images/back.jpg");
   const [card3, setCard3] = useState("../src/images/back.jpg");
   const [currentLanguage, setCurrentLanguage] = useState(languages[0]);
+  const [appVisible, setAppVisible] = useState(false);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
   useEffect(() => {
     if (result) {
       return setIsLoading(false);
     }
   }, [result]);
+
+  function toggleAppVisibility() {
+    setHeaderCollapsed(!headerCollapsed);
+    setAppVisible(!appVisible);
+  }
 
   async function onSubmit(event) {
     setIsLoading(true);
@@ -90,58 +98,77 @@ export default function Home() {
 
       <main className="container">
         <CanvasBlock className="canvas" />
-        <div className="header">
-          <h1>
-            <TranslateObject object={TITLE} language={currentLanguage} />
-          </h1>
-          <div className="language-selector">
-            <LanguageSelector
-              languages={languages}
-              onLanguageChange={setCurrentLanguage}
+
+        <div className={`header ${headerCollapsed ? "header--collapsed" : ""}`}>
+          <div className="header-content">
+            <h1>
+              <TranslateObject object={TITLE} language={currentLanguage} />
+            </h1>
+            <div className="language-selector">
+              <LanguageSelector
+                languages={languages}
+                onLanguageChange={setCurrentLanguage}
+              />
+            </div>
+          </div>
+          <img className="logo" src="./src/images/icon.png"></img>
+          <div className="description">
+            <TranslateObject object={DESCRIPTION} language={currentLanguage} />
+          </div>
+          {!appVisible ? (
+            <AppVisibilityButton
+              appVisible={appVisible}
+              toggleAppVisibility={toggleAppVisibility}
             />
-          </div>
-        </div>
-
-        <img className="logo" src="./src/images/icon.png"></img>
-
-        <div className="description">
-          <TranslateObject object={DESCRIPTION} language={currentLanguage} />
-        </div>
-        <form onSubmit={onSubmit} className="input-container">
-          <input
-            type="text"
-            name="question"
-            placeholder="..."
-            value={questionInput}
-            onChange={(e) => setQuestionInput(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="submit-btn"
-            value="Submit"
-            disabled={isLoading}
-          ></button>
-        </form>
-
-        <div className="cards-container">
-          <div className="card" id="card1">
-            <img className="card-image" src={card1}></img>
-          </div>
-          <div className="card" id="card2">
-            <img className="card-image" src={card2}></img>
-          </div>
-          <div className="card" id="card3">
-            <img className="card-image" src={card3}></img>
-          </div>
-        </div>
-        <div className="reading-container">
-          {" "}
-          {isLoading ? (
-            <LoadingIcon />
           ) : (
-            <div dangerouslySetInnerHTML={createMarkup(result)}></div>
+            ""
           )}
         </div>
+
+        <div className={`app ${appVisible ? "app--visible" : ""}`}>
+          <form onSubmit={onSubmit} className="input-container">
+            <input
+              type="text"
+              name="question"
+              placeholder="..."
+              value={questionInput}
+              onChange={(e) => setQuestionInput(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="submit-btn"
+              value="Submit"
+              disabled={isLoading}
+            ></button>
+          </form>
+
+          <div className="cards-container">
+            <div className="card" id="card1">
+              <img className="card-image" src={card1}></img>
+            </div>
+            <div className="card" id="card2">
+              <img className="card-image" src={card2}></img>
+            </div>
+            <div className="card" id="card3">
+              <img className="card-image" src={card3}></img>
+            </div>
+          </div>
+          <div className="reading-container">
+            {isLoading ? (
+              <LoadingIcon />
+            ) : (
+              <div dangerouslySetInnerHTML={createMarkup(result)}></div>
+            )}
+          </div>
+        </div>
+        {appVisible ? (
+              <AppVisibilityButton
+                appVisible={appVisible}
+                toggleAppVisibility={toggleAppVisibility}
+              />
+            ) : (
+              ""
+            )}
       </main>
     </div>
   );
