@@ -16,7 +16,7 @@ export default async function (req, res) {
     return;
   }
 
-  const { question, cards } = req.body;
+  const { question, cards, lang } = req.body;
   if (question.trim().length === 0) {
     res.status(400).json({
       error: {
@@ -29,9 +29,9 @@ export default async function (req, res) {
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(question, cards),
+      prompt: generatePrompt(question, cards, lang),
       temperature: 0.8,
-      max_tokens: 310,
+      max_tokens: 640,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
   } catch (error) {
@@ -49,11 +49,12 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(question, cards) {
-  return `If ${question} is not a question, please answer "111" and skip the following: 
-    Question: ${question}\nCard 1: ${cards[0].name}\nCard 2: ${cards[1].name}\nCard 3: ${cards[2].name}. 
+function generatePrompt(question, cards, lang) {
+  if (lang === "en") {
+    return `Please provide a tarot reading using the following cards with proper line breaks between each interpretation, and include a summary that combines the 3 cards and the previous reading: Question: ${question}\nCard 1: ${cards[0].nameEn}\nCard 2: ${cards[1].nameEn}\nCard 3: ${cards[2].nameEn}\nUse only these cards to build the reading.`;
+  }
+  if (lang === "fr") {
+    return `Veuillez fournir une lecture de tarot en utilisant les cartes suivantes avec des sauts de ligne appropriés entre chaque interprétation, et inclure un résumé qui combine les 3 cartes et la lecture précédente : Question : ${question}\nCarte 1 : ${cards[0].nameFr}\nCarte 2 : ${cards[1].nameFr}\nCarte 3 : ${cards[2].nameFr}\nUtilisez uniquement ces cartes pour construire la lecture.`;
+  }
   
-    Use only these cards to build the reading. 
-    The answer must written with the language used in the question.
-    Write the answer in HTML and add two linebreak for each sentences.`;
 }

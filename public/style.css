@@ -108,6 +108,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  align-items: center;
 }
 
 .container input {
@@ -142,10 +143,15 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   font-size: 1.2rem;
+  white-space: pre-wrap;
+
+}
+
+.show-app-btn:hover {
+  background-color: #686868;
 }
 
 .submit-btn:hover {
-  color: white;
   background-color: #686868;
 }
 
@@ -182,17 +188,17 @@
 button[type="submit"] {
   position: relative;
   right: 0;
-  border: none;
   margin-left: 8px;
-  padding: 10px;
+  border: 2px solid #ffffff;
+  width: 36px;
+  height: 36px;
+  background: rgba(209, 209, 209, 0.178);
   cursor: pointer;
-  width: 46px;
-  height: 46px;
-  background-color: #dbdbdb;
+  padding: 0;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  border-radius: 4px;
+  border-radius: 50px;
 }
 
 button[type="submit"]:before {
@@ -200,10 +206,10 @@ button[type="submit"]:before {
   display: block;
   border-style: solid;
   border-width: 8px 0 8px 12px;
-  border-color: transparent transparent transparent #a3a3a3;
+  border-color: transparent transparent transparent #ffffff;
   position: absolute;
   top: 50%;
-  right: 15px;
+  left: 37%;
   transform: translateY(-50%);
 }
 
@@ -246,10 +252,6 @@ button[type="submit"]:before {
   cursor: pointer;
   text-decoration: none;
   color: #000;
-}
-
-.language-selector__option:hover {
-  background-color: #eee;
 }
 
 .language-selector__option img {

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { shuffle, cards } from "./api/cards";
+import { shuffle, cards } from "../public/constants/cards";
 import { AppVisibilityButton } from "../components/AppVisibilityButton";
 import { CanvasBlock } from "../components/CanvasBlock";
 import { LanguageSelector } from "../components/LanguageSelector";
@@ -9,7 +9,10 @@ import { TranslateObject } from "../components/TranslateObject";
 import { DESCRIPTION, TITLE } from "../public/constants/constants";
 
 function createMarkup(result) {
-  return { __html: result };
+  if (result) {
+    return { __html: result.replace(/^\n+|\n+$/g, "").replace(/\n/g, "<br>") };
+  }
+  return;
 }
 
 const LoadingIcon = () => {
@@ -65,9 +68,12 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: questionInput, cards: cards }),
+        body: JSON.stringify({
+          question: questionInput,
+          cards: cards,
+          lang: currentLanguage.name,
+        }),
       });
-
       const data = await response.json();
       if (response.status !== 200) {
         throw (
@@ -162,13 +168,13 @@ export default function Home() {
           </div>
         </div>
         {appVisible ? (
-              <AppVisibilityButton
-                appVisible={appVisible}
-                toggleAppVisibility={toggleAppVisibility}
-              />
-            ) : (
-              ""
-            )}
+          <AppVisibilityButton
+            appVisible={appVisible}
+            toggleAppVisibility={toggleAppVisibility}
+          />
+        ) : (
+          ""
+        )}
       </main>
     </div>
   );
