@@ -36,9 +36,9 @@ export default function Home() {
 
   const [questionInput, setQuestionInput] = useState("");
   const [result, setResult] = useState();
-  const [card1, setCard1] = useState("../src/images/back.jpg");
-  const [card2, setCard2] = useState("../src/images/back.jpg");
-  const [card3, setCard3] = useState("../src/images/back.jpg");
+  const [card1, setCard1] = useState("../src/images/cards/back.png");
+  const [card2, setCard2] = useState("../src/images/cards/back.png");
+  const [card3, setCard3] = useState("../src/images/cards/back.png");
   const [currentLanguage, setCurrentLanguage] = useState(languages[0]);
   const [appVisible, setAppVisible] = useState(false);
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
@@ -57,9 +57,9 @@ export default function Home() {
   async function onSubmit(event) {
     setIsLoading(true);
     setResult();
-    setCard1("../src/images/back.jpg");
-    setCard2("../src/images/back.jpg");
-    setCard3("../src/images/back.jpg");
+    setCard1("../src/images/cards/back.png");
+    setCard2("../src/images/cards/back.png");
+    setCard3("../src/images/cards/back.png");
     event.preventDefault();
     try {
       shuffle();
