@@ -1,44 +1,43 @@
-# OpenAI API Quickstart - Node.js example app
+# Donkeys Readings
 
-This is an example pet name generator app used in the OpenAI API [quickstart tutorial](https://platform.openai.com/docs/quickstart). It uses the [Next.js](https://nextjs.org/) framework with [React](https://reactjs.org/). Check out the tutorial or follow the instructions below to get set up.
+A simple web application that shuffles a deck of cards and generates a reading based on the user's question.
 
-![Text box that says name my pet with an icon of a dog](https://user-images.githubusercontent.com/10623307/213887080-b2bc4645-7fdb-4dbd-ae42-efce00d0dc29.png)
+## Table of Contents
 
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
 
-## Setup
+## Installation
 
-1. If you don’t have Node.js installed, [install it from here](https://nodejs.org/en/) (Node.js version >= 14.6.0 required)
+1. Clone the repository
+\`\`\`
+git clone https://github.com/your-username/donkeys-readings.git
+\`\`\`
 
-2. Clone this repository
+2. Install dependencies
+\`\`\`
+npm install
+\`\`\`
 
-3. Navigate into the project directory
+3. Start the development server
+\`\`\`
+npm run dev
+\`\`\`
 
-   ```bash
-   $ cd openai-quickstart-node
-   ```
+4. Open your browser and visit http://localhost:3000
 
-4. Install the requirements
+## Usage
 
-   ```bash
-   $ npm install
-   ```
+1. Enter your question in the input field.
+2. Click the submit button.
+3. The application will shuffle the cards and generate a reading based on your question.
+4. You can change the language using the language selector.
 
-5. Make a copy of the example environment variables file
+## Features
 
-   On Linux systems: 
-   ```bash
-   $ cp .env.example .env
-   ```
-   On Windows:
-   ```powershell
-   $ copy .env.example .env
-   ```
-6. Add your [API key](https://platform.openai.com/account/api-keys) to the newly created `.env` file
+- Shuffles a deck of cards and displays three cards on the screen
+- Generates a reading based on the user's question
+- Allows users to switch between English and French
+- Displays a loading icon while waiting for the reading to be generated
 
-7. Run the app
-
-   ```bash
-   $ npm run dev
-   ```
-
-You should now be able to access the app at [http://localhost:3000](http://localhost:3000)! For the full context behind this example app, check out the [tutorial](https://platform.openai.com/docs/quickstart).
