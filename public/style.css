@@ -1,7 +1,13 @@
 @font-face {
-  font-family: 'MyCustomFont';
+  font-family: 'StMarie';
   src: url('./src/font/StMarie-Thin.otf') format('truetype');
 }
+
+@font-face {
+  font-family: 'DellaRespira';
+  src: url('./src/font/DellaRespira-Regular.ttf') format('truetype');
+}
+
 
 .canvas {
   position: fixed;
@@ -17,7 +23,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 20px 20px 20px;
-  font-family: 'MyCustomFont', monospace;
+  font-family: 'DellaRespira', monospace;
 }
 
 .app {
@@ -91,6 +97,7 @@
   color: #ffffff;
   font-size: 62px;
   margin-bottom: 26px;
+  font-family: 'StMarie';
 }
 
 .language-selector {

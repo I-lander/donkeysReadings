@@ -1,15 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function LanguageSelector({ languages, onLanguageChange }) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+
+  function getDefaultLanguage() {
+    return languages.find((lang) => lang.name === "en");
+  }
+
+  const [selectedLanguage, setSelectedLanguage] = useState(() => getDefaultLanguage());
+
+  useEffect(() => {
+    function getDetectedLanguage() {
+      if (typeof navigator !== "undefined") {
+        return navigator.language.substring(0, 2);
+      }
+      return null;
+    }
+
+    function setDetectedLanguage() {
+      const detectedLanguage = getDetectedLanguage();
+      const languageToSet =
+        (detectedLanguage && languages.find((lang) => lang.name === detectedLanguage)) ||
+        getDefaultLanguage();
+      setSelectedLanguage(languageToSet);
+      onLanguageChange(languageToSet);
+    }
+
+    setDetectedLanguage();
+  }, []);
 
   function handleLanguageSelect(language) {
     setSelectedLanguage(language);
     setShowDropdown(false);
     onLanguageChange(language);
   }
-
   return (
     <div className="language-selector">
       <button
