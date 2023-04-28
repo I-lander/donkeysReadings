@@ -51,10 +51,12 @@ export default async function (req, res) {
 
 function generatePrompt(question, cards, lang) {
   if (lang === "en") {
-    return `Please provide a tarot reading using the following cards with proper line breaks between each interpretation, and include a summary that combines the 3 cards and the previous reading: Question: ${question}\nCard 1: ${cards[0].nameEn}\nCard 2: ${cards[1].nameEn}\nCard 3: ${cards[2].nameEn}\nUse only these cards to build the reading.`;
+    return `Please provide a tarot reading using the following cards, with appropriate line breaks between each interpretation, and include a comprehensive synthesis that ties the 3 cards together: Question: ${question}\nCard 1: ${cards[0].nameEn}\nCard 2: ${cards[1].nameEn}\nCard 3: ${cards[2].nameEn}\nUse only these cards to construct the reading.`;
   }
+
   if (lang === "fr") {
-    return `Veuillez fournir une lecture de tarot en utilisant les cartes suivantes avec des sauts de ligne appropriés entre chaque interprétation, et inclure un résumé qui combine les 3 cartes et la lecture précédente : Question : ${question}\nCarte 1 : ${cards[0].nameFr}\nCarte 2 : ${cards[1].nameFr}\nCarte 3 : ${cards[2].nameFr}\nUtilisez uniquement ces cartes pour construire la lecture.`;
+    return `Veuillez fournir une lecture de tarot en utilisant les cartes suivantes avec des sauts de ligne appropriés entre chaque interprétation, et inclure une synthèse complète permettant de lier les 3 cartes ensemble : Question : ${question}\nCarte 1 : ${cards[0].nameFr}\nCarte 2 : ${cards[1].nameFr}\nCarte 3 : ${cards[2].nameFr}\nUtilisez uniquement ces cartes pour construire la lecture.`;
   }
-  
 }
+
+// return `Regarding the question : ${question} and in the optic to do a tarot reading, ask a relevant question directly to the user. You must talk directly to the user in the same way a medium would do. The answer of this question will be use in a future prompt to help you building a more personal reading of the cards.`

@@ -11,8 +11,8 @@ import { CaptireButton, ReadingBlock } from "../components/ReadingBlock.js";
 
 export default function Home() {
   const languages = [
-    { name: "en", icon: "./src/images/english.png" },
-    { name: "fr", icon: "./src/images/french.png" },
+    { code: "en", icon: "./src/images/english.png" },
+    { code: "fr", icon: "./src/images/french.png" },
   ];
 
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function Home() {
         body: JSON.stringify({
           question: questionInput,
           cards: cards,
-          lang: currentLanguage.name,
+          lang: currentLanguage.code,
         }),
       });
       const data = await response.json();

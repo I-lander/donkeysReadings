@@ -4,7 +4,7 @@ export function LanguageSelector({ languages, onLanguageChange }) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   function getDefaultLanguage() {
-    return languages.find((lang) => lang.name === "en");
+    return languages.find((lang) => lang.code === "en");
   }
 
   const [selectedLanguage, setSelectedLanguage] = useState(() => getDefaultLanguage());
@@ -20,7 +20,7 @@ export function LanguageSelector({ languages, onLanguageChange }) {
     function setDetectedLanguage() {
       const detectedLanguage = getDetectedLanguage();
       const languageToSet =
-        (detectedLanguage && languages.find((lang) => lang.name === detectedLanguage)) ||
+        (detectedLanguage && languages.find((lang) => lang.code === detectedLanguage)) ||
         getDefaultLanguage();
       setSelectedLanguage(languageToSet);
       onLanguageChange(languageToSet);
@@ -43,18 +43,18 @@ export function LanguageSelector({ languages, onLanguageChange }) {
         <img
           className="language-selector__icon"
           src={selectedLanguage.icon}
-          alt={selectedLanguage.name}
+          alt={selectedLanguage.code}
         />
       </button>
       <div className={`language-selector__dropdown${showDropdown ? " show" : ""}`}>
         {languages.map((language) => (
           <a
-            key={language.name}
+            key={language.code}
             href="#"
             className="language-selector__option"
             onClick={() => handleLanguageSelect(language)}
           >
-            <img src={language.icon} alt={language.name} />
+            <img src={language.icon} alt={language.code} />
           </a>
         ))}
       </div>
