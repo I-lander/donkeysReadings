@@ -25,6 +25,7 @@ function captureDivAsDataURL(div, callback) {
     const dataURL = canvas.toDataURL();
     callback(dataURL);
   });
+  div.classList.remove("screenShot")
 }
 
 function downloadScreenshot(dataURL) {
