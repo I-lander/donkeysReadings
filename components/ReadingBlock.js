@@ -36,7 +36,14 @@ function downloadScreenshot(dataURL) {
   document.body.removeChild(link);
 }
 
-export const ReadingBlock = ({ card1, card2, card3, isLoading, result }) => {
+export const ReadingBlock = ({
+  card1,
+  card2,
+  card3,
+  isLoading,
+  question,
+  result,
+}) => {
   const captureDiv = React.useRef();
 
   const handleCaptureClick = () => {
@@ -59,6 +66,8 @@ export const ReadingBlock = ({ card1, card2, card3, isLoading, result }) => {
                 <img className="card-image" src={card3}></img>
               </div>
             </div>
+            <div className="question">{question}</div>
+
             <div className="reading-container">
               {isLoading ? (
                 <LoadingIcon />

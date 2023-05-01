@@ -19,6 +19,7 @@ export default function Home() {
 
   const [questionInput, setQuestionInput] = useState("");
   const [placeholderText, setPlaceholderText] = useState("");
+  const [question, setQuestion] = useState();
   const [result, setResult] = useState();
   const [card1, setCard1] = useState("../src/images/cards/back.png");
   const [card2, setCard2] = useState("../src/images/cards/back.png");
@@ -48,6 +49,7 @@ export default function Home() {
     setCard1("../src/images/cards/back.png");
     setCard2("../src/images/cards/back.png");
     setCard3("../src/images/cards/back.png");
+    setQuestion(questionInput)
     event.preventDefault();
     try {
       shuffle();
@@ -145,26 +147,9 @@ export default function Home() {
             card2={card2}
             card3={card3}
             isLoading={isLoading}
+            question={question}
             result={result}
           />
-          {/* <div className="cards-container">
-            <div className="card" id="card1">
-              <img className="card-image" src={card1}></img>
-            </div>
-            <div className="card" id="card2">
-              <img className="card-image" src={card2}></img>
-            </div>
-            <div className="card" id="card3">
-              <img className="card-image" src={card3}></img>
-            </div>
-          </div>
-          <div className="reading-container">
-            {isLoading ? (
-              <LoadingIcon />
-            ) : (
-              <div dangerouslySetInnerHTML={createMarkup(result)}></div>
-            )}
-          </div> */}
         </div>
         {appVisible ? (
           <AppVisibilityButton

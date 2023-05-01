@@ -164,7 +164,14 @@
   padding: 20px;
   font-size: 1.2rem;
   white-space: pre-wrap;
+}
 
+.question {
+  color: white;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem;
 }
 
 .show-app-btn:hover {
