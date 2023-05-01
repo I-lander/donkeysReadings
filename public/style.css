@@ -21,7 +21,7 @@
 
 .container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 32px auto;
   padding: 0 20px 20px 20px;
   font-family: 'DellaRespira', monospace;
 }
@@ -48,10 +48,6 @@
   align-items: center;
   margin: auto;
   margin-bottom: 26px;
-}
-
-.header--collapsed .logo {
-  display: none;
 }
 
 .header--collapsed .description {
@@ -92,14 +88,6 @@
   outline: none;
 }
 
-.header-content h1 {
-  text-align: center;
-  color: #ffffff;
-  font-size: 62px;
-  margin-bottom: 26px;
-  font-family: 'StMarie';
-}
-
 .language-selector {
   position: relative;
   display: flex;
@@ -108,7 +96,7 @@
 }
 
 .logo {
-  width: 200px;
+  width: 250px;
   display: flex;
   justify-content: center;
   margin: auto;
@@ -122,8 +110,18 @@
   color: #ffffff;
   font-size: 24px;
   margin-bottom: 20px;
+  white-space: pre-wrap;
+  font-family: 'StMarie';
   opacity: 1;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.introduction {
+  text-align: center;
+  color: #ffffff;
+  font-size: 42px;
+  font-family: 'StMarie';
+  font-weight: bold;
 }
 
 .input-container {
@@ -291,5 +289,13 @@ button[type="submit"]:before {
 @media (max-width: 700px) {
   .card {
     width: calc(100% / 3 - 20px);
+  }
+
+  .introduction {
+    font-size: 36px;
+  }
+
+  .logo {
+    width: 200px;
   }
 }

@@ -4,9 +4,9 @@ import { shuffle, cards } from "../public/constants/cards";
 import { AppVisibilityButton } from "../components/AppVisibilityButton";
 import { CanvasBlock } from "../components/CanvasBlock";
 import { LanguageSelector } from "../components/LanguageSelector";
-import { TranslateObject } from "../components/TranslateObject";
+import { TranslateObject, getPlaceholderText } from "../components/TranslateObject";
 
-import { DESCRIPTION, TITLE } from "../public/constants/constants";
+import { DESCRIPTION, INTRODUCTION } from "../public/constants/constants";
 import { CaptireButton, ReadingBlock } from "../components/ReadingBlock.js";
 
 export default function Home() {
@@ -18,6 +18,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [questionInput, setQuestionInput] = useState("");
+  const [placeholderText, setPlaceholderText] = useState("");
   const [result, setResult] = useState();
   const [card1, setCard1] = useState("../src/images/cards/back.png");
   const [card2, setCard2] = useState("../src/images/cards/back.png");
@@ -31,6 +32,10 @@ export default function Home() {
       return setIsLoading(false);
     }
   }, [result]);
+
+  useEffect(() => {
+    setPlaceholderText(getPlaceholderText(currentLanguage.code));
+  }, [currentLanguage]);
 
   function toggleAppVisibility() {
     setHeaderCollapsed(!headerCollapsed);
@@ -46,7 +51,7 @@ export default function Home() {
     event.preventDefault();
     try {
       shuffle();
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/generateReading", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,9 +95,7 @@ export default function Home() {
 
         <div className={`header ${headerCollapsed ? "header--collapsed" : ""}`}>
           <div className="header-content">
-            <h1>
-              <TranslateObject object={TITLE} language={currentLanguage} />
-            </h1>
+            <img className="logo" src="./src/images/icon.png"></img>
             <div className="language-selector">
               <LanguageSelector
                 languages={languages}
@@ -100,8 +103,15 @@ export default function Home() {
               />
             </div>
           </div>
-          <img className="logo" src="./src/images/icon.png"></img>
           <div className="description">
+            <div className="introduction">
+              <TranslateObject
+                object={INTRODUCTION}
+                language={currentLanguage}
+              />
+            </div>
+            <br />
+            <br />
             <TranslateObject object={DESCRIPTION} language={currentLanguage} />
           </div>
           {!appVisible ? (
@@ -119,7 +129,7 @@ export default function Home() {
             <input
               type="text"
               name="question"
-              placeholder="..."
+              placeholder={placeholderText}
               value={questionInput}
               onChange={(e) => setQuestionInput(e.target.value)}
             />
