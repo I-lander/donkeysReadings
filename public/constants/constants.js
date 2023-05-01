@@ -1,8 +1,11 @@
-const INTRODUCTION = { en: "Donkeys Readings", fr: "Bienvenue dans les Lectures de l'Ane !" };
-const DESCRIPTION = {
-  en: "Welcome to the Donkey's Readings!\r\n\r\n This application using the model ChatGPT offers you a personalized tarot reading based on your question.",
-  fr: "Cette application utilisant le modèle ChatGPT vous propose un tirage personnalisé basée sur votre question.",
+const INTRODUCTION = {
+  en: "Welcome to the Donkey's Readings!",
+  fr: "Bienvenue dans les Lectures de l'Ane !",
 };
-const PLACEHOLDER = {en: "Your question", fr: "Votre question"}
+const DESCRIPTION = {
+  en: "Ask a question and our AI will provide a reading based on the Marseille Tarot.\r\nThe more specific the question, the more accurate the reading will be.",
+  fr: "Posez une question et notre IA vous proposera un tirage basé sur le tarot de Marseille.\r\nPlus la question sera précise, plus la lecture le sera.",
+};
+const PLACEHOLDER = { en: "Your question", fr: "Votre question" };
 
 export { INTRODUCTION, DESCRIPTION, PLACEHOLDER };
