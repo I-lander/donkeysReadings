@@ -20,6 +20,8 @@ function createMarkup(result) {
 }
 
 function captureDivAsDataURL(div, callback) {
+  console.log(div);
+  div.classList.add("screenShot")
   html2canvas(div).then((canvas) => {
     const dataURL = canvas.toDataURL();
     callback(dataURL);
