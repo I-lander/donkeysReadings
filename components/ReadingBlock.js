@@ -20,7 +20,6 @@ function createMarkup(result) {
 }
 
 function captureDivAsDataURL(div, callback) {
-  console.log(div);
   div.classList.add("screenShot")
   html2canvas(div).then((canvas) => {
     const dataURL = canvas.toDataURL();
@@ -31,7 +30,7 @@ function captureDivAsDataURL(div, callback) {
 function downloadScreenshot(dataURL) {
   const link = document.createElement("a");
   link.href = dataURL;
-  link.download = "screenshot.png";
+  link.download = "TarotReading.png";
   link.style.display = "none";
   document.body.appendChild(link);
   link.click();
