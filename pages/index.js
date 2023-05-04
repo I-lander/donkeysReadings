@@ -4,7 +4,10 @@ import { shuffle, cards } from "../public/constants/cards";
 import { AppVisibilityButton } from "../components/AppVisibilityButton";
 import { CanvasBlock } from "../components/CanvasBlock";
 import { LanguageSelector } from "../components/LanguageSelector";
-import { TranslateObject, getPlaceholderText } from "../components/TranslateObject";
+import {
+  TranslateObject,
+  getPlaceholderText,
+} from "../components/TranslateObject";
 
 import { DESCRIPTION, INTRODUCTION } from "../public/constants/constants";
 import { CaptireButton, ReadingBlock } from "../components/ReadingBlock.js";
@@ -49,7 +52,7 @@ export default function Home() {
     setCard1("../src/images/cards/back.png");
     setCard2("../src/images/cards/back.png");
     setCard3("../src/images/cards/back.png");
-    setQuestion(questionInput)
+    setQuestion(questionInput);
     event.preventDefault();
     try {
       shuffle();
