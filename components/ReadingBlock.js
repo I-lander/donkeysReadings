@@ -20,18 +20,28 @@ function createMarkup(result) {
 }
 
 function captureDivAsDataURL(div, callback) {
-  div.classList.add("screenShot")
+  div.classList.add("screenShot");
   html2canvas(div).then((canvas) => {
     const dataURL = canvas.toDataURL();
     callback(dataURL);
   });
-  div.classList.remove("screenShot")
+  div.classList.remove("screenShot");
 }
 
 function downloadScreenshot(dataURL) {
+  const currentDate = new Date();
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+  const formattedDate = ("0" + day).slice(-2) + ("0" + month).slice(-2) + year;
+  const hours = currentDate.getHours();
+  const minutes = currentDate.getMinutes();
+  const seconds = currentDate.getSeconds();
+  const formattedTime = ('0' + hours).slice(-2) + ('0' + minutes).slice(-2) + ('0' + seconds).slice(-2);
+
   const link = document.createElement("a");
   link.href = dataURL;
-  link.download = "TarotReading.png";
+  link.download = `TarotReading_${formattedDate}-${formattedTime}.png`;
   link.style.display = "none";
   document.body.appendChild(link);
   link.click();
