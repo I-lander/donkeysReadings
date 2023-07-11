@@ -1,6 +1,5 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
-import { shuffle, cards } from "../public/constants/cards";
+import { useEffect, useState } from "react";
 import { AppVisibilityButton } from "../components/AppVisibilityButton";
 import { CanvasBlock } from "../components/CanvasBlock";
 import { LanguageSelector } from "../components/LanguageSelector";
@@ -8,9 +7,10 @@ import {
   TranslateObject,
   getPlaceholderText,
 } from "../components/TranslateObject";
+import { cards, shuffle } from "../public/constants/cards";
 
+import { ReadingBlock } from "../components/ReadingBlock.js";
 import { DESCRIPTION, INTRODUCTION } from "../public/constants/constants";
-import { CaptireButton, ReadingBlock } from "../components/ReadingBlock.js";
 
 export default function Home() {
   const languages = [
@@ -56,6 +56,9 @@ export default function Home() {
     event.preventDefault();
     try {
       shuffle();
+      setCard1(cards[0].img);
+      setCard2(cards[1].img);
+      setCard3(cards[2].img);
       const response = await fetch("/api/generateReading", {
         method: "POST",
         headers: {
@@ -67,17 +70,17 @@ export default function Home() {
           lang: currentLanguage.code,
         }),
       });
+
       const data = await response.json();
       if (response.status !== 200) {
+        setCard1("../src/images/cards/back.png");
+        setCard2("../src/images/cards/back.png");
+        setCard3("../src/images/cards/back.png");
         throw (
           data.error ||
           new Error(`Request failed with status ${response.status}`)
         );
       }
-      setCard1(cards[0].img);
-      setCard2(cards[1].img);
-      setCard3(cards[2].img);
-
       setResult(data.result);
       setQuestionInput("");
     } catch (error) {
