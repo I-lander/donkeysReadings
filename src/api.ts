@@ -1,7 +1,37 @@
+import { clearSession, getSession, refreshIdToken } from './auth';
 import type { Card } from './constants/cards';
 import { getDeviceId } from './deviceId';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
+
+function authHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'X-Device-Id': getDeviceId() };
+  const session = getSession();
+  if (session) {
+    headers.Authorization = `Bearer ${session.idToken}`;
+  }
+  return headers;
+}
+
+/** Fetch with identity headers; on an expired Google token, refreshes and retries once. */
+async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const doFetch = () =>
+    fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: { ...(init.headers as Record<string, string> | undefined), ...authHeaders() },
+    });
+
+  let response = await doFetch();
+  if (response.status === 401 && getSession()) {
+    const refreshed = await refreshIdToken();
+    if (!refreshed) {
+      // stale session: fall back to the device identity
+      clearSession();
+    }
+    response = await doFetch();
+  }
+  return response;
+}
 
 export class QuotaExhaustedError extends Error {
   constructor() {
@@ -26,12 +56,9 @@ export async function generateReading(
   cards: Card[],
   lang: string
 ): Promise<ReadingResponse> {
-  const response = await fetch(`${API_URL}/api/generateReading`, {
+  const response = await apiFetch('/api/generateReading', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Device-Id': getDeviceId(),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question, cards, lang }),
   });
 
@@ -46,13 +73,31 @@ export async function generateReading(
 }
 
 export async function fetchQuota(): Promise<Quota> {
-  const response = await fetch(`${API_URL}/api/quota`, {
-    headers: { 'X-Device-Id': getDeviceId() },
-  });
+  const response = await apiFetch('/api/quota');
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`);
   }
   return response.json();
+}
+
+export interface LoginResponse {
+  userId: string;
+  email?: string;
+  quota: Quota;
+}
+
+/** Exchanges a Google ID token; the server merges the device history into the account. */
+export async function loginWithGoogle(idToken: string): Promise<LoginResponse> {
+  const response = await fetch(`${API_URL}/api/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Device-Id': getDeviceId() },
+    body: JSON.stringify({ idToken }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error?.message ?? `Request failed with status ${response.status}`);
+  }
+  return data;
 }
 
 /** Polls the quota until a rewarded-ad credit lands (SSV callback is asynchronous). */

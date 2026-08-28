@@ -32,12 +32,27 @@ Vite proxies `/api` to the local server, open http://localhost:5173.
 
 ## Services
 
-- **API (Render)**: https://donkeys-readings-api.onrender.com - health check: `GET /api/quota` with an `X-Device-Id` header
-- **Render dashboard**: https://dashboard.render.com/web/srv-da8n1v4s728c73c95fm0 (service `donkeys-readings-api`, Frankfurt, free plan; env vars are managed in the dashboard, not synced from `render.yaml`)
-- **AdMob console**: https://apps.admob.com - account `pub-2071064442830483`, app `7366077983` (Les Lectures de l'Âne), rewarded ad unit `reading-reward` with SSV pointing to `<api>/api/admob/ssv`
+- **API (Render)**: https://donkeys-readings-api.onrender.com - health check: `GET /api/quota` with an `X-Device-Id` header; privacy policy: `GET /privacy`
+- **Render dashboard**: https://dashboard.render.com/web/srv-da8n1v4s728c73c95fm0 (service `donkeys-readings-api`, Frankfurt, free plan). The service was created without a Blueprint: env vars are managed in the dashboard (not synced from `render.yaml`) and **a push to `main` does not auto-deploy** - trigger "Manual Deploy > Deploy latest commit" in the dashboard. The free instance spins down after inactivity (first request can take ~50 s).
+- **AdMob console**: https://apps.admob.com - account `pub-2071064442830483`, app `7366077983` (Les Lectures de l'Âne), rewarded ad unit `reading-reward` (`ca-app-pub-2071064442830483/2327549891`) with SSV pointing to `<api>/api/admob/ssv`. A GDPR consent message ("GDPR consent - Les Lectures de l'Ane", EN/FR, refuse button enabled) is published under Privacy & messaging; its privacy policy URL is `<api>/privacy`. Once the app is on the Play Store, link it in AdMob ("Associate with an app store").
+- **OpenAI billing**: https://platform.openai.com/settings/organization/billing/overview - prepaid credits with auto-reload ON (top up $10 when the balance drops below $5, capped at $20/month). When the cap is reached the API returns 429 until the next month or a manual top-up.
 - **GitHub**: https://github.com/I-lander/donkeysReadings
 
-For the Android build, `VITE_API_URL` in `.env` must point to the Render URL above.
+For the Android build, `VITE_API_URL` and `VITE_ADMOB_REWARDED_AD_ID` in `.env` must be set (see below); both are baked into the bundle at build time.
+
+## Quota & rewarded ads
+
+Each device gets `FREE_READINGS_PER_DAY` (3) free readings per day, tracked server-side in SQLite and keyed by a random device id sent as the `X-Device-Id` header. When the quota is exhausted the app offers a rewarded AdMob video. The credit is granted **server-side only**: Google's servers call `GET /api/admob/ssv` (signature-verified, deduplicated by `transaction_id`) which adds `CREDITS_PER_AD` (1) credit. The client polls `GET /api/quota` until the credit lands, then retries the reading.
+
+Readings are stored per device: asking the exact same question again (normalized) returns the stored reading and its original card draw without an OpenAI call or quota consumption, and recent readings are passed to the prompt as context.
+
+To test the credit flow locally without real AdMob signatures, set `ADMOB_SSV_SKIP_VERIFY=true` and simulate the callback: `curl "http://localhost:3001/api/admob/ssv?user_id=<device-id>&transaction_id=test-1"`.
+
+## Environment variables
+
+Server (Render dashboard / local `.env`): `OPENAI_API_KEY` (secret), `FREE_READINGS_PER_DAY`, `CREDITS_PER_AD`, `DB_PATH` (`/tmp/donkeys.db` on Render - wiped on restart, fine for quotas), `ADMOB_SSV_SKIP_VERIFY` (local testing only), `PORT`.
+
+Client (baked in at build time): `VITE_API_URL` (deployed API URL for Android builds; empty in dev, Vite proxies `/api`), `VITE_ADMOB_REWARDED_AD_ID` (real rewarded ad unit id; empty = Google's test ad unit).
 
 ## Android
 
@@ -58,3 +73,10 @@ npm run build:bundle     # release AAB (Play Store)
 - Allows users to switch between English and French
 - Displays a loading icon while waiting for the reading to be generated
 - Screenshot of the reading (download on web, share sheet on Android)
+- Daily free-reading quota with rewarded ads to earn extra readings (Android)
+- Repeating a question returns the original reading and cards (server-side history)
+
+
+## Sources
+
+Cards are downloaded from https://gallica.bnf.fr/ark:/12148/btv1b10539685w.r=tarot%20de%20marseille?rk=171674;4

@@ -30,3 +30,11 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+
+# local SQLite database (quota / readings)
+donkeys.db
+donkeys.db-shm
+donkeys.db-wal
+
+# signing keys
+*.keystore

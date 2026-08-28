@@ -13,10 +13,15 @@
     "open:android": "npx cap open android",
     "install:android": "npm run build && set \"JAVA_HOME=C:/Program Files/java/jdk-21.0.7\" && npx cap run android",
     "build:apk": "npm run build:android && cd android && gradlew.bat assembleRelease",
-    "build:bundle": "npm run build:android && cd android && gradlew.bat :app:bundleRelease"
+    "build:bundle": "npm run build:android && cd android && gradlew.bat :app:bundleRelease",
+    "version:patch": "node push-new-version.js patch",
+    "version:minor": "node push-new-version.js minor",
+    "version:major": "node push-new-version.js major",
+    "upgrade-android-version-code": "node push-new-bundle-version.js"
   },
   "dependencies": {
     "@capacitor-community/admob": "^6.2.0",
+    "@codetrix-studio/capacitor-google-auth": "3.4.0-rc.4",
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
     "@capacitor/filesystem": "^6.0.3",

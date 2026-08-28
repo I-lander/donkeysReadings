@@ -36,10 +36,7 @@ export function LanguageSelector({ languages, onLanguageChange }: LanguageSelect
 
   return (
     <div className="language-selector">
-      <button
-        className="language-selector__button"
-        onClick={() => setShowDropdown(!showDropdown)}
-      >
+      <button className="language-selector__button" onClick={() => setShowDropdown(!showDropdown)}>
         <img
           className="language-selector__icon"
           src={selectedLanguage.icon}

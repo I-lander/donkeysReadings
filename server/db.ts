@@ -44,7 +44,9 @@ interface DeviceRow {
 
 function getDevice(deviceId: string): DeviceRow {
   db.prepare('INSERT OR IGNORE INTO devices (device_id) VALUES (?)').run(deviceId);
-  return db.prepare('SELECT * FROM devices WHERE device_id = ?').get(deviceId) as unknown as DeviceRow;
+  return db
+    .prepare('SELECT * FROM devices WHERE device_id = ?')
+    .get(deviceId) as unknown as DeviceRow;
 }
 
 export interface Quota {
@@ -126,13 +128,49 @@ export function saveReading(
 ): void {
   db.prepare(
     'INSERT INTO readings (device_id, question, question_norm, lang, cards, result, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(deviceId, question, normalizeQuestion(question), lang, cards, result, new Date().toISOString());
+  ).run(
+    deviceId,
+    question,
+    normalizeQuestion(question),
+    lang,
+    cards,
+    result,
+    new Date().toISOString()
+  );
+}
+
+/**
+ * Moves what a device accumulated to a Google account (called at sign-in).
+ * History moves, credits are transferred (then zeroed on the device), and the
+ * account's free usage for today takes the highest of the two counts. The device
+ * row keeps its own free counter, so a sign-in/sign-out cycle cannot reset the
+ * daily quota in either direction. Idempotent.
+ */
+export function mergeIdentity(fromId: string, toId: string): void {
+  if (fromId === toId) return;
+
+  db.prepare('UPDATE readings SET device_id = ? WHERE device_id = ?').run(toId, fromId);
+
+  const from = db.prepare('SELECT * FROM devices WHERE device_id = ?').get(fromId) as unknown as
+    DeviceRow | undefined;
+  if (!from) return;
+
+  const to = getDevice(toId);
+  const todayStr = today();
+  const fromFree = from.free_used_on === todayStr ? from.free_count : 0;
+  const toFree = to.free_used_on === todayStr ? to.free_count : 0;
+  db.prepare(
+    'UPDATE devices SET credits = credits + ?, free_used_on = ?, free_count = ? WHERE device_id = ?'
+  ).run(from.credits, todayStr, Math.max(fromFree, toFree), toId);
+  db.prepare('UPDATE devices SET credits = 0 WHERE device_id = ?').run(fromId);
 }
 
 /** Credits a rewarded ad. Returns false when the transaction was already processed. */
 export function creditAdReward(deviceId: string, transactionId: string): boolean {
   const inserted = db
-    .prepare('INSERT OR IGNORE INTO ad_rewards (transaction_id, device_id, rewarded_at) VALUES (?, ?, ?)')
+    .prepare(
+      'INSERT OR IGNORE INTO ad_rewards (transaction_id, device_id, rewarded_at) VALUES (?, ?, ?)'
+    )
     .run(transactionId, deviceId, new Date().toISOString());
   if (inserted.changes === 0) return false;
 

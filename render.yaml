@@ -14,3 +14,5 @@ services:
         value: '1'
       - key: DB_PATH
         value: /tmp/donkeys.db
+      - key: GOOGLE_CLIENT_ID
+        sync: false

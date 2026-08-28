@@ -1,0 +1,112 @@
+name: Android Release Build
+
+# Triggered by the version tags pushed by push-new-version.js (npm run version:patch/minor).
+# Builds the web app, syncs Capacitor, produces a signed APK + AAB, attaches them to the
+# GitHub release, and publishes the AAB to the Play Store internal track when a service
+# account is configured.
+#
+# Required repository secrets:
+#   ANDROID_KEYSTORE            base64 of the release keystore file
+#   STORE_PASSWORD              keystore password
+#   KEY_ALIAS                   key alias
+#   KEY_PASSWORD                key password
+#   PLAY_SERVICE_ACCOUNT_JSON   (optional) Google Play service account JSON; skip to disable upload
+# Required repository variables (baked into the public client bundle, not secret):
+#   VITE_API_URL                deployed API URL (https://donkeys-readings-api.onrender.com)
+#   VITE_ADMOB_REWARDED_AD_ID   AdMob rewarded ad unit id
+#   VITE_GOOGLE_CLIENT_ID       OAuth web client id for Google Sign-In
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Create .env file (client build-time values)
+        run: |
+          echo "VITE_API_URL=${{ vars.VITE_API_URL }}" >> .env
+          echo "VITE_ADMOB_REWARDED_AD_ID=${{ vars.VITE_ADMOB_REWARDED_AD_ID }}" >> .env
+          echo "VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }}" >> .env
+
+      - name: Decode keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > release.keystore
+
+      - name: Build web assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x android/gradlew
+
+      - name: Build signed APK and AAB
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ github.workspace }}/release.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          cd android
+          ./gradlew assembleRelease :app:bundleRelease
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+
+      - name: Attach artifacts to the GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+
+      - name: Check Play Store credentials
+        id: play
+        run: |
+          if [ -n "${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish AAB to the Play Store (internal track)
+        if: startsWith(github.ref, 'refs/tags/') && steps.play.outputs.enabled == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.donkeysisle.donkeysreadings
+          releaseFiles: android/app/build/outputs/bundle/release/*.aab
+          track: internal
+          status: completed

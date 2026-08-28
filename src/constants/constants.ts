@@ -14,12 +14,27 @@ export const PLACEHOLDER: TranslatedText = { en: 'Your question', fr: 'Votre que
 
 export const WATCH_AD_PROMPT: TranslatedText = {
   en: 'You have used your free readings for today. Watch a short ad to unlock another reading?',
-  fr: "Vous avez utilisé vos tirages gratuits du jour. Regarder une courte publicité pour débloquer un tirage ?",
+  fr: 'Vous avez utilisé vos tirages gratuits du jour. Regarder une courte publicité pour débloquer un tirage ?',
 };
 
 export const QUOTA_EXHAUSTED: TranslatedText = {
   en: 'You have used your free readings for today. Come back tomorrow!',
   fr: 'Vous avez utilisé vos tirages gratuits du jour. Revenez demain !',
+};
+
+export const SIGN_IN: TranslatedText = {
+  en: 'Sign in with Google',
+  fr: 'Se connecter avec Google',
+};
+
+export const SIGN_OUT: TranslatedText = {
+  en: 'Sign out',
+  fr: 'Se déconnecter',
+};
+
+export const SIGN_IN_FAILED: TranslatedText = {
+  en: 'Google sign-in failed. Please try again.',
+  fr: 'La connexion Google a échoué. Réessayez.',
 };
 
 export const AD_FAILED: TranslatedText = {
