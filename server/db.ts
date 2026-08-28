@@ -18,6 +18,17 @@ db.exec(`
     device_id TEXT NOT NULL,
     rewarded_at TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS readings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    device_id TEXT NOT NULL,
+    question TEXT NOT NULL,
+    question_norm TEXT NOT NULL,
+    lang TEXT NOT NULL,
+    cards TEXT NOT NULL,
+    result TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_readings_device ON readings (device_id, id);
 `);
 
 function today(): string {
@@ -69,6 +80,53 @@ export function consumeReading(deviceId: string): boolean {
     .prepare('UPDATE devices SET credits = credits - 1 WHERE device_id = ? AND credits > 0')
     .run(deviceId);
   return updated.changes > 0;
+}
+
+export interface ReadingRow {
+  question: string;
+  lang: string;
+  cards: string;
+  result: string;
+  created_at: string;
+}
+
+/** Normalizes a question so that trivially different phrasings match (case, spacing). */
+export function normalizeQuestion(question: string): string {
+  return question.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/** Returns the stored reading for the exact same question (normalized) and language, if any. */
+export function findReadingByQuestion(
+  deviceId: string,
+  question: string,
+  lang: string
+): ReadingRow | undefined {
+  return db
+    .prepare(
+      'SELECT question, lang, cards, result, created_at FROM readings WHERE device_id = ? AND question_norm = ? AND lang = ? ORDER BY id DESC LIMIT 1'
+    )
+    .get(deviceId, normalizeQuestion(question), lang) as unknown as ReadingRow | undefined;
+}
+
+/** Returns the most recent readings of a device, newest first. */
+export function getReadingHistory(deviceId: string, limit = 3): ReadingRow[] {
+  return db
+    .prepare(
+      'SELECT question, lang, cards, result, created_at FROM readings WHERE device_id = ? ORDER BY id DESC LIMIT ?'
+    )
+    .all(deviceId, limit) as unknown as ReadingRow[];
+}
+
+export function saveReading(
+  deviceId: string,
+  question: string,
+  lang: string,
+  cards: string,
+  result: string
+): void {
+  db.prepare(
+    'INSERT INTO readings (device_id, question, question_norm, lang, cards, result, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(deviceId, question, normalizeQuestion(question), lang, cards, result, new Date().toISOString());
 }
 
 /** Credits a rewarded ad. Returns false when the transaction was already processed. */

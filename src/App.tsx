@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { adsAvailable, initAds, showRewardedAd } from './ads';
-import { generateReading, QuotaExhaustedError, waitForCredit } from './api';
+import { generateReading, QuotaExhaustedError, waitForCredit, type ReadingResponse } from './api';
 import { AppVisibilityButton } from './components/AppVisibilityButton';
 import { CanvasBlock } from './components/CanvasBlock';
 import { Language, LanguageSelector } from './components/LanguageSelector';
@@ -92,7 +92,7 @@ export function App() {
       setCard2(cards[1].img);
       setCard3(cards[2].img);
       const drawnCards = cards.slice(0, 3);
-      let reading: string;
+      let reading: ReadingResponse;
       try {
         reading = await generateReading(questionInput, drawnCards, currentLanguage.code);
       } catch (error) {
@@ -101,7 +101,13 @@ export function App() {
         }
         reading = await generateReading(questionInput, drawnCards, currentLanguage.code);
       }
-      setResult(reading);
+      // A repeated question returns the original draw: show those cards, not the new shuffle.
+      if (reading.cards && reading.cards.length >= 3) {
+        setCard1(reading.cards[0].img);
+        setCard2(reading.cards[1].img);
+        setCard3(reading.cards[2].img);
+      }
+      setResult(reading.result);
       setQuestionInput('');
     } catch (error) {
       setIsLoading(false);

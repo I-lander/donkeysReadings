@@ -15,11 +15,17 @@ export interface Quota {
   credits: number;
 }
 
+export interface ReadingResponse {
+  result: string;
+  /** Cards of the reading; for a repeated question these are the original draw. */
+  cards?: Card[];
+}
+
 export async function generateReading(
   question: string,
   cards: Card[],
   lang: string
-): Promise<string> {
+): Promise<ReadingResponse> {
   const response = await fetch(`${API_URL}/api/generateReading`, {
     method: 'POST',
     headers: {
@@ -36,7 +42,7 @@ export async function generateReading(
     }
     throw new Error(data.error?.message ?? `Request failed with status ${response.status}`);
   }
-  return data.result;
+  return { result: data.result, cards: data.cards };
 }
 
 export async function fetchQuota(): Promise<Quota> {
