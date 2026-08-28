@@ -2,6 +2,8 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import OpenAI from 'openai';
+import { consumeReading, creditAdReward, getQuota } from './db';
+import { verifySsvSignature } from './ssv';
 
 interface DrawnCard {
   nameEn: string;
@@ -13,6 +15,46 @@ app.use(cors());
 app.use(express.json());
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+function getDeviceId(req: express.Request): string | undefined {
+  const deviceId = req.header('X-Device-Id');
+  return deviceId && /^[\w-]{8,64}$/.test(deviceId) ? deviceId : undefined;
+}
+
+app.get('/api/quota', (req, res) => {
+  const deviceId = getDeviceId(req);
+  if (!deviceId) {
+    res.status(400).json({ error: { message: 'Missing X-Device-Id header' } });
+    return;
+  }
+  res.json(getQuota(deviceId));
+});
+
+// AdMob rewarded ad Server-Side Verification callback.
+// Configured in the AdMob console on the rewarded ad unit; user_id carries the device id.
+app.get('/api/admob/ssv', async (req, res) => {
+  try {
+    const rawQuery = req.originalUrl.split('?')[1] ?? '';
+    const valid = await verifySsvSignature(rawQuery);
+    if (!valid && process.env.ADMOB_SSV_SKIP_VERIFY !== 'true') {
+      res.status(403).json({ error: { message: 'Invalid SSV signature' } });
+      return;
+    }
+
+    const deviceId = String(req.query.user_id ?? '');
+    const transactionId = String(req.query.transaction_id ?? '');
+    if (!deviceId || !transactionId) {
+      res.status(400).json({ error: { message: 'Missing user_id or transaction_id' } });
+      return;
+    }
+
+    creditAdReward(deviceId, transactionId);
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error(`SSV error: ${(error as Error).message}`);
+    res.status(500).send('Error');
+  }
+});
 
 app.post('/api/generateReading', async (req, res) => {
   if (!process.env.OPENAI_API_KEY) {
@@ -48,6 +90,23 @@ app.post('/api/generateReading', async (req, res) => {
     return;
   }
 
+  const deviceId = getDeviceId(req);
+  if (!deviceId) {
+    res.status(400).json({ error: { message: 'Missing X-Device-Id header' } });
+    return;
+  }
+
+  const quota = getQuota(deviceId);
+  if (quota.freeRemaining <= 0 && quota.credits <= 0) {
+    res.status(429).json({
+      error: {
+        code: 'quota_exhausted',
+        message: 'No readings left today',
+      },
+    });
+    return;
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -55,7 +114,8 @@ app.post('/api/generateReading', async (req, res) => {
       temperature: 0.8,
       max_tokens: 640,
     });
-    res.status(200).json({ result: completion.choices[0].message.content });
+    consumeReading(deviceId);
+    res.status(200).json({ result: completion.choices[0].message.content, quota: getQuota(deviceId) });
   } catch (error) {
     if (error instanceof OpenAI.APIError) {
       console.error(error.status, error.message);

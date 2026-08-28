@@ -8,3 +8,9 @@ services:
     envVars:
       - key: OPENAI_API_KEY
         sync: false
+      - key: FREE_READINGS_PER_DAY
+        value: '3'
+      - key: CREDITS_PER_AD
+        value: '1'
+      - key: DB_PATH
+        value: /tmp/donkeys.db

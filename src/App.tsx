@@ -1,12 +1,20 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { generateReading } from './api';
+import { adsAvailable, initAds, showRewardedAd } from './ads';
+import { generateReading, QuotaExhaustedError, waitForCredit } from './api';
 import { AppVisibilityButton } from './components/AppVisibilityButton';
 import { CanvasBlock } from './components/CanvasBlock';
 import { Language, LanguageSelector } from './components/LanguageSelector';
 import { ReadingBlock } from './components/ReadingBlock';
 import { getPlaceholderText, TranslateObject } from './components/TranslateObject';
 import { cards, shuffle } from './constants/cards';
-import { DESCRIPTION, INTRODUCTION } from './constants/constants';
+import {
+  AD_FAILED,
+  DESCRIPTION,
+  INTRODUCTION,
+  QUOTA_EXHAUSTED,
+  WATCH_AD_PROMPT,
+} from './constants/constants';
+import { getDeviceId } from './deviceId';
 
 const CARD_BACK = '/assets/images/cards/back.png';
 
@@ -39,9 +47,35 @@ export function App() {
     setPlaceholderText(getPlaceholderText(currentLanguage.code));
   }, [currentLanguage]);
 
+  useEffect(() => {
+    initAds().catch((error) => console.error('AdMob init failed:', error));
+  }, []);
+
   function toggleAppVisibility() {
     setHeaderCollapsed(!headerCollapsed);
     setAppVisible(!appVisible);
+  }
+
+  function translated(text: Record<string, string>): string {
+    return text[currentLanguage.code] ?? text.en;
+  }
+
+  // Quota exhausted: offer a rewarded ad, wait for the server-side credit, then retry once.
+  async function tryUnlockWithAd(): Promise<boolean> {
+    if (!adsAvailable()) {
+      alert(translated(QUOTA_EXHAUSTED));
+      return false;
+    }
+    if (!confirm(translated(WATCH_AD_PROMPT))) return false;
+    try {
+      const rewarded = await showRewardedAd(getDeviceId());
+      if (!rewarded) return false;
+      return await waitForCredit();
+    } catch (error) {
+      console.error(error);
+      alert(translated(AD_FAILED));
+      return false;
+    }
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -57,7 +91,16 @@ export function App() {
       setCard1(cards[0].img);
       setCard2(cards[1].img);
       setCard3(cards[2].img);
-      const reading = await generateReading(questionInput, cards.slice(0, 3), currentLanguage.code);
+      const drawnCards = cards.slice(0, 3);
+      let reading: string;
+      try {
+        reading = await generateReading(questionInput, drawnCards, currentLanguage.code);
+      } catch (error) {
+        if (!(error instanceof QuotaExhaustedError) || !(await tryUnlockWithAd())) {
+          throw error;
+        }
+        reading = await generateReading(questionInput, drawnCards, currentLanguage.code);
+      }
       setResult(reading);
       setQuestionInput('');
     } catch (error) {
@@ -66,6 +109,9 @@ export function App() {
       setCard2(CARD_BACK);
       setCard3(CARD_BACK);
       console.error(error);
+      if (error instanceof QuotaExhaustedError) {
+        return;
+      }
       alert(error instanceof Error ? error.message : String(error));
     }
   }

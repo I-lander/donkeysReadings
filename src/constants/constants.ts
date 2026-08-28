@@ -11,3 +11,18 @@ export const DESCRIPTION: TranslatedText = {
 };
 
 export const PLACEHOLDER: TranslatedText = { en: 'Your question', fr: 'Votre question' };
+
+export const WATCH_AD_PROMPT: TranslatedText = {
+  en: 'You have used your free readings for today. Watch a short ad to unlock another reading?',
+  fr: "Vous avez utilisé vos tirages gratuits du jour. Regarder une courte publicité pour débloquer un tirage ?",
+};
+
+export const QUOTA_EXHAUSTED: TranslatedText = {
+  en: 'You have used your free readings for today. Come back tomorrow!',
+  fr: 'Vous avez utilisé vos tirages gratuits du jour. Revenez demain !',
+};
+
+export const AD_FAILED: TranslatedText = {
+  en: 'The ad could not be shown. Please try again later.',
+  fr: "La publicité n'a pas pu être affichée. Réessayez plus tard.",
+};
