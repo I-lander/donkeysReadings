@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: donkeys-readings-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npx tsx server/index.ts
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
