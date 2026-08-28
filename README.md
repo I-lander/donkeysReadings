@@ -30,6 +30,15 @@ npm start
 
 Vite proxies `/api` to the local server, open http://localhost:5173.
 
+## Services
+
+- **API (Render)**: https://donkeys-readings-api.onrender.com - health check: `GET /api/quota` with an `X-Device-Id` header
+- **Render dashboard**: https://dashboard.render.com/web/srv-da8n1v4s728c73c95fm0 (service `donkeys-readings-api`, Frankfurt, free plan; env vars are managed in the dashboard, not synced from `render.yaml`)
+- **AdMob console**: https://apps.admob.com - account `pub-2071064442830483`, app `7366077983` (Les Lectures de l'Âne), rewarded ad unit `reading-reward` with SSV pointing to `<api>/api/admob/ssv`
+- **GitHub**: https://github.com/I-lander/donkeysReadings
+
+For the Android build, `VITE_API_URL` in `.env` must point to the Render URL above.
+
 ## Android
 
 The app is a static bundle: it needs a deployed API server. Set `VITE_API_URL` in `.env` to the server URL before building.
