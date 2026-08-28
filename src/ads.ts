@@ -19,9 +19,15 @@ let initialized = false;
 export async function initAds(): Promise<void> {
   if (!adsAvailable() || initialized) return;
   await AdMob.initialize();
-  const consentInfo = await AdMob.requestConsentInfo();
-  if (consentInfo.isConsentFormAvailable && consentInfo.status === AdmobConsentStatus.REQUIRED) {
-    await AdMob.showConsentForm();
+  try {
+    const consentInfo = await AdMob.requestConsentInfo();
+    if (consentInfo.isConsentFormAvailable && consentInfo.status === AdmobConsentStatus.REQUIRED) {
+      await AdMob.showConsentForm();
+    }
+  } catch (error) {
+    // A UMP failure (e.g. no consent message configured in the AdMob console)
+    // must not make ads permanently unavailable; the ad request itself decides.
+    console.error(`AdMob consent flow failed: ${(error as Error).message}`);
   }
   initialized = true;
 }
