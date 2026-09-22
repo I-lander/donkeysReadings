@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NEW_DRAW, SHARE } from '../constants/uiText';
 import type { TranslatedText } from '../constants/constants';
+import { sfx } from '../sound';
 
 interface ReadingPanelProps {
   question: string;
@@ -25,11 +26,13 @@ export function ReadingPanel({
   const [typedLength, setTypedLength] = useState(0);
   const startRef = useRef<number>(0);
   const doneRef = useRef(false);
+  const cursorRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     setTypedLength(0);
     doneRef.current = false;
     startRef.current = Date.now();
+    if (result.length > 0) sfx.scribbleStart();
     let raf = 0;
     const tick = () => {
       // Time-based so it survives re-renders and background throttling.
@@ -38,6 +41,7 @@ export function ReadingPanel({
       if (n >= result.length) {
         if (!doneRef.current) {
           doneRef.current = true;
+          sfx.scribbleStop();
           onTypingDone();
         }
         return;
@@ -45,9 +49,17 @@ export function ReadingPanel({
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      sfx.scribbleStop();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result]);
+
+  // Follow the quill: keep the cursor in view as the text grows.
+  useEffect(() => {
+    cursorRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [typedLength]);
 
   const typing = typedLength < result.length;
 
@@ -56,7 +68,7 @@ export function ReadingPanel({
       <div className="reading-panel__question">« {question} »</div>
       <div className="reading-panel__text">
         {result.slice(0, typedLength)}
-        {typing && <span className="reading-panel__cursor" />}
+        {typing && <span ref={cursorRef} className="reading-panel__cursor" />}
       </div>
       {!typing && (
         <div className="reading-panel__actions">

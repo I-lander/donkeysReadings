@@ -973,3 +973,163 @@ body {
     text-shadow: 0 0 22px rgba(232, 194, 104, 0.6);
   }
 }
+
+/* ── Juice: micro-interactions & celebrations ───────── */
+
+.btn,
+.chips__chip,
+.auth-chip,
+.ask-bar__send,
+.language-selector__button,
+.history__item,
+.arcana__cell {
+  transition: transform 0.12s ease;
+}
+
+.btn:active,
+.chips__chip:active,
+.auth-chip:active,
+.language-selector__button:active,
+.arcana__cell:active {
+  transform: scale(0.94);
+}
+
+.history__item:active {
+  transform: scale(0.98);
+}
+
+.ask-bar__send--ready:active {
+  transform: scale(0.88);
+}
+
+.bottom-nav__inner {
+  transition:
+    color 0.2s,
+    transform 0.15s ease;
+}
+
+.bottom-nav__item:active .bottom-nav__inner {
+  transform: scale(0.86);
+}
+
+.ask-bar input {
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+
+.ask-bar input:focus {
+  box-shadow: 0 0 20px rgba(160, 124, 226, 0.28);
+}
+
+/* Overshoot pop as each card lands face up (delayed to the flip mid-point). */
+.card-slot__scene--landed {
+  animation: dr-card-land 0.55s cubic-bezier(0.3, 1.7, 0.4, 1) 0.4s both;
+}
+
+.card-slot__name--in {
+  animation: dr-name-in 0.5s ease-out 0.55s both;
+}
+
+/* Quota pips: shake out when spent, pop in when earned. */
+.quota-pips__pip--spent {
+  animation: dr-pip-spent 0.55s ease-out;
+}
+
+.quota-pips__pip--gain {
+  animation: dr-pip-gain 0.45s cubic-bezier(0.3, 1.7, 0.4, 1);
+}
+
+/* The streak chip bounces every time the count changes (keyed remount). */
+.streak {
+  animation: dr-streak-bump 0.6s cubic-bezier(0.3, 1.8, 0.4, 1);
+}
+
+.reading-panel__cursor {
+  box-shadow: 0 0 8px rgba(122, 95, 174, 0.7);
+}
+
+.toast {
+  animation: dr-pop-in 0.35s cubic-bezier(0.3, 1.6, 0.4, 1);
+}
+
+@keyframes dr-card-land {
+  0% {
+    transform: scale(1);
+  }
+  55% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dr-name-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dr-pip-spent {
+  0% {
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(232, 194, 104, 0.8);
+    transform: scale(1.5);
+  }
+  55% {
+    transform: scale(0.6);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dr-pip-gain {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes dr-streak-bump {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.22);
+    box-shadow: 0 0 18px rgba(232, 194, 104, 0.55);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dr-pop-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Accessibility: users who ask for less motion get less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

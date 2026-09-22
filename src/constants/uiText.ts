@@ -68,6 +68,14 @@ export const TOAST_SHARED: TranslatedText = {
 
 export const PLACEHOLDER_TEXT: TranslatedText = { en: 'Your question…', fr: 'Votre question…' };
 
+/** `{n}` is replaced by the streak length. */
+export const TOAST_STREAK: TranslatedText = {
+  en: '🔥 {n}-day streak!',
+  fr: '🔥 Série de {n} jours !',
+};
+export const SOUND_ON_LABEL: TranslatedText = { en: 'Sound on', fr: 'Son activé' };
+export const SOUND_OFF_LABEL: TranslatedText = { en: 'Sound off', fr: 'Son coupé' };
+
 /** Question starters — deliberately unfinished; the user completes them. */
 export const SUGGESTION_POOL: Record<string, string[]> = {
   fr: [

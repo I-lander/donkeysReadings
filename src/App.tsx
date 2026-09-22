@@ -40,11 +40,18 @@ import {
   pickSuggestions,
   POSITIONS,
   SHUFFLING,
+  SOUND_OFF_LABEL,
+  SOUND_ON_LABEL,
   SUGGESTIONS_HINT,
+  TOAST_CREDIT,
   TOAST_SHARED,
+  TOAST_STREAK,
 } from './constants/uiText';
 import { getDeviceId } from './deviceId';
+import { confetti } from './fx';
+import { haptics } from './haptics';
 import { addHistory, loadHistory, type HistoryEntry } from './history';
+import { initSound, sfx, soundOn, toggleSound } from './sound';
 import { bumpStreak, currentStreak } from './streak';
 import { captureDivAsDataURL, saveScreenshot } from './share';
 
@@ -74,6 +81,7 @@ export function App() {
   const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions('en'));
   const [sheetOpen, setSheetOpen] = useState(false);
   const [toast, setToast] = useState('');
+  const [sound, setSound] = useState(soundOn());
 
   const captureRef = useRef<HTMLDivElement>(null);
   const pendingQuestion = useRef('');
@@ -85,6 +93,7 @@ export function App() {
   useEffect(() => {
     initAds().catch((error) => console.error('AdMob init failed:', error));
     initAuth().catch((error) => console.error('Google Auth init failed:', error));
+    initSound();
     refreshQuota();
     return () => timers.current.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -171,6 +180,8 @@ export function App() {
   }
 
   async function runReading(q: string) {
+    sfx.whoosh();
+    haptics.tap();
     setPhase('shuffling');
     setRevealed(0);
     setResult('');
@@ -221,7 +232,16 @@ export function App() {
         date: new Date().toISOString(),
       })
     );
-    setStreak(bumpStreak());
+    sfx.complete();
+    const before = streak;
+    const after = bumpStreak();
+    setStreak(after);
+    if (after > before) {
+      confetti();
+      sfx.sparkle();
+      haptics.success();
+      showToast(translated(TOAST_STREAK).replace('{n}', String(after)));
+    }
     void refreshQuota();
   }
 
@@ -263,7 +283,7 @@ export function App() {
         </div>
         <div className="app-header__spacer" />
         {streak > 0 && (
-          <div className="streak" title="Jours consécutifs">
+          <div className="streak" key={streak} title="Jours consécutifs">
             <svg
               width="12"
               height="12"
@@ -280,6 +300,29 @@ export function App() {
           </div>
         )}
         <QuotaPips remaining={remaining} total={FREE_READINGS_PER_DAY} />
+        <button
+          className="auth-chip"
+          onClick={() => setSound(toggleSound())}
+          title={translated(sound ? SOUND_ON_LABEL : SOUND_OFF_LABEL)}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M11 5 6.5 9H3v6h3.5L11 19z" />
+            {sound ? (
+              <path d="M15 9.5a4 4 0 0 1 0 5M17.8 7a8 8 0 0 1 0 10" />
+            ) : (
+              <path d="M15.5 9.5l5 5M20.5 9.5l-5 5" />
+            )}
+          </svg>
+        </button>
         <LanguageSelector languages={languages} onLanguageChange={setCurrentLanguage} />
         {authAvailable() && (
           <button
@@ -321,7 +364,11 @@ export function App() {
                     <button
                       key={s}
                       className="chips__chip"
-                      onClick={() => setQuestionInput(s.replace(/…$/, ' '))}
+                      onClick={() => {
+                        sfx.pop();
+                        haptics.tap();
+                        setQuestionInput(s.replace(/…$/, ' '));
+                      }}
                     >
                       {s}
                     </button>
@@ -399,7 +446,15 @@ export function App() {
         {tab === 'arcana' && <ArcanaGrid lang={lang} translated={translated} />}
       </div>
 
-      <BottomNav tab={tab} onTab={setTab} translated={translated} />
+      <BottomNav
+        tab={tab}
+        onTab={(next) => {
+          sfx.pop();
+          haptics.tap();
+          setTab(next);
+        }}
+        translated={translated}
+      />
 
       {toast && <div className="toast">{toast}</div>}
 
@@ -410,6 +465,10 @@ export function App() {
         requestAd={requestAd}
         onUnlocked={() => {
           setSheetOpen(false);
+          confetti(0.5);
+          sfx.sparkle();
+          haptics.success();
+          showToast(translated(TOAST_CREDIT));
           void refreshQuota();
           if (pendingQuestion.current) void runReading(pendingQuestion.current);
           pendingQuestion.current = '';
